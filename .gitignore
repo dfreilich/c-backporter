@@ -162,3 +162,7 @@ cython_debug/
 
 patch.diff
 patch_log.txt
+# leftover files from patch
+*.orig
+*.rej
+target_copy.c
