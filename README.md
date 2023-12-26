@@ -32,6 +32,11 @@ Upon running the tool, you should notice a few additional files:
 3. `result.c.orig`/`result.c.rej` &rarr; These files will only be created in the event of a merge conflict, where it was unable to auto-merge a patch. The `*.rej` file will contain details about the failed section, and the `.orig` file is how it was originally, so you can merge it by hand.
 4. `patch.diff` &rarr; If you are running this by running the project directly (and not via the docker image), you may also see `patch.diff`. This is the result of the diff between the `before` and `after` file.
 
+## Demo
+You can watch the demo below to see how it can be used
+
+https://github.com/dfreilich/c-backporter/assets/7035673/7377e0bc-8a11-47c0-8f2a-0d7f72b6cf34
+
 ## Scope:
 * Language & Tools: Python, with permissible use of common external tools compatible with Ubuntu or other Linux OSes.
 * Format: Proof-of-concept. Focus on functionality and efficiency rather than extensive development time.
