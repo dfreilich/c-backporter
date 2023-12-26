@@ -6,7 +6,7 @@ Objective: Develop a small, efficient Python-based solution for backporting chan
 
 1. Ensure that `diffutils` and `patch` are installed locally. 
     > On `Linux` and `Mac`, they should be installed already, but if not, you can install them using `apt-get` or `brew`
-2. Install all the pip packages:
+2. Install all the pip packages (alternatively, you can create a `venv` by running `python -m virtualenv venv && python -m virtualenv venv` and then installing the requirements):
 
     `pip install -r requirements.txt`
 3. Run the application, providing the required files:
