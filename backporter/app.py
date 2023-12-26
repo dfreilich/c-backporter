@@ -32,6 +32,30 @@ def generate_patch(before_file, after_file):
         sys.exit(1)
 
 
+def write_patch_log(patch_output, log_path, target_file):
+    # Extract conflicted hunks' start and end lines from the output
+    conflict_lines = [
+        line
+        for line in patch_output.decode("utf-8").splitlines()
+        if line.startswith("Hunk #")
+    ]
+
+    conflict_info = "\n".join(conflict_lines)
+    failed_hunks_last_line = re.search(
+        r"(\d+) out of (\d+) hunks", patch_output.decode("utf-8")
+    )
+
+    # Write conflict information to patch_log.txt
+    with open(log_path, "a") as log_file:
+        log_file.write(f"Patches for File {target_file}\n")
+        log_file.write(conflict_info)
+        if failed_hunks_last_line:
+            total_failed, total_hunks = failed_hunks_last_line.groups()
+            log_file.write(
+                f"\nTotal failed hunks: {total_failed} " f"out of {total_hunks}\n"
+            )
+
+
 def apply_patch(target_file, output_dir=""):
     try:
         # Create a copy of the target file as result.c
@@ -47,37 +71,13 @@ def apply_patch(target_file, output_dir=""):
         )
         patch_output, _ = patch_process.communicate()
 
-        if patch_process.returncode == 1:  # Indicates merge conflicts
-            print("Merge conflicts detected. Check patch_log.txt for details.")
-
-            # Extract conflicted hunks' start and end lines from the output
-            conflict_lines = [
-                line
-                for line in patch_output.decode("utf-8").splitlines()
-                if line.startswith("Hunk #")
-            ]
-            conflict_info = "\n".join(conflict_lines)
-            failed_hunks_last_line = re.search(
-                r"(\d+) out of (\d+) hunks fail", patch_output.decode("utf-8")
-            )
-
-            # Write conflict information to patch_log.txt
-            with open(log_path, "a") as log_file:
-                log_file.write(f"Patches for File {target_file}\n")
-                log_file.write(conflict_info)
-                if failed_hunks_last_line:
-                    total_failed, total_hunks = failed_hunks_last_line.groups()
-                    log_file.write(
-                        f"\nTotal failed hunks: {total_failed} "
-                        f"out of {total_hunks}\n"
-                    )
-        elif patch_process.returncode != 0:
+        if patch_process.returncode not in (0, 1):
             code = patch_process.returncode
             sys.exit(f"Error: Patch failed with exit code {code}")
 
-        # # Capture conflicts or success logs
-        # with open('patch_log.txt', 'wb') as log_file:
-        #     log_file.write(patch_output)
+        print(f"Patch concluded, writing log file to {log_path}")
+        write_patch_log(patch_output, log_path, target_path)
+
     except Exception as e:
         print(f"Error during patch application: {e}")
         sys.exit(1)
